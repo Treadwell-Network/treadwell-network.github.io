@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treadwell Protocol</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="A decentralized, encrypted, sneakernet-native state-synchronization protocol. No servers. No internet. No fixed topology. Just people carrying drives between nodes.">
+<meta property="og:title" content="Treadwell Protocol">
+<meta property="og:description" content="Decentralized encrypted messaging over sneakernet. State replication, not message routing.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://treadwell.network">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0c10;
+  --bg-secondary: #12151c;
+  --bg-card: #181c25;
+  --bg-card-hover: #1e2330;
+  --bg-accent: #1a2332;
+  --text-primary: #e8eaf0;
+  --text-secondary: #8a90a0;
+  --text-muted: #555c6e;
+  --accent: #4a9eff;
+  --accent-dim: #2a6cc4;
+  --accent-glow: rgba(74, 158, 255, 0.15);
+  --accent-glow-strong: rgba(74, 158, 255, 0.3);
+  --accent-warm: #f0a050;
+  --accent-warm-dim: rgba(240, 160, 80, 0.15);
+  --border: #252a36;
+  --border-accent: #2a3a50;
+  --grid-line: rgba(74, 158, 255, 0.04);
+  --node-pulse: rgba(74, 158, 255, 0.6);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'Source Serif 4', Georgia, serif;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f4f2ee;
+  --bg-secondary: #eae7e1;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafaf8;
+  --bg-accent: #e8eef6;
+  --text-primary: #1a1c22;
+  --text-secondary: #5a5e6a;
+  --text-muted: #9a9eaa;
+  --accent: #2a6cc4;
+  --accent-dim: #4a9eff;
+  --accent-glow: rgba(42, 108, 196, 0.08);
+  --accent-glow-strong: rgba(42, 108, 196, 0.15);
+  --accent-warm: #c07828;
+  --accent-warm-dim: rgba(192, 120, 40, 0.1);
+  --border: #d8d4cc;
+  --border-accent: #b8c8dc;
+  --grid-line: rgba(42, 108, 196, 0.04);
+  --node-pulse: rgba(42, 108, 196, 0.5);
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--serif);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ─── Grid background ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Theme toggle ─── */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  letter-spacing: 0.05em;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Container ─── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Hero ─── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 0;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-title .accent { color: var(--accent); }
+
+.hero-subtitle {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 640px;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-premise {
+  margin-top: 3rem;
+  padding: 1.5rem 2rem;
+  background: var(--bg-accent);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 700px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+.hero-scroll-hint::after {
+  content: '';
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, var(--text-muted), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+/* ─── Node animation in hero ─── */
+.hero-nodes {
+  position: absolute;
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  height: 320px;
+  opacity: 0;
+  animation: fadeIn 1.5s 1s forwards;
+}
+
+@media (max-width: 900px) {
+  .hero-nodes { display: none; }
+}
+
+.hero-nodes svg { width: 100%; height: 100%; }
+
+.node-dot {
+  fill: var(--accent);
+  opacity: 0.7;
+}
+.node-dot.warm { fill: var(--accent-warm); }
+
+.node-line {
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.15;
+  stroke-dasharray: 4 4;
+}
+
+.node-pulse {
+  fill: none;
+  stroke: var(--node-pulse);
+  stroke-width: 1;
+  opacity: 0;
+  animation: pulse 3s infinite;
+}
+.node-pulse:nth-child(2) { animation-delay: 1s; }
+.node-pulse:nth-child(3) { animation-delay: 2s; }
+
+/* ─── Features grid ─── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-top: 6rem;
+}
+
+.section-heading {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.section-intro {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.feature-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow);
+}
+.feature-card.active::before { opacity: 1; }
+
+.feature-icon {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--accent-glow);
+  border-radius: 10px;
+  color: var(--accent);
+}
+.feature-icon.warm {
+  background: var(--accent-warm-dim);
+  color: var(--accent-warm);
+}
+
+.feature-card h3 {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.01em;
+}
+
+.feature-card p {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.feature-expand-hint {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+  letter-spacing: 0.05em;
+  transition: color var(--transition);
+}
+.feature-card:hover .feature-expand-hint { color: var(--accent); }
+.feature-card.active .feature-expand-hint { color: var(--accent); }
+
+/* ─── Detail sections ─── */
+.detail-section {
+  border-top: 1px solid var(--border);
+  padding: 5rem 0;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+.detail-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detail-number {
+  font-family: var(--mono);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0.2;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.detail-title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.detail-body {
+  max-width: 740px;
+  margin-left: 4.5rem;
+}
+
+.detail-body p {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+}
+
+.detail-body strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.detail-callout {
+  background: var(--bg-accent);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.detail-callout.warm {
+  border-left-color: var(--accent-warm);
+}
+
+.detail-list {
+  list-style: none;
+  margin: 1.25rem 0;
+}
+.detail-list li {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 0.4rem 0 0.4rem 1.5rem;
+  position: relative;
+  line-height: 1.6;
+}
+.detail-list li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+/* ─── Architecture strip ─── */
+.arch-strip {
+  display: flex;
+  gap: 0;
+  margin: 2rem 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.arch-layer {
+  flex: 1;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.arch-layer:last-child { border-right: none; }
+.arch-layer:hover { background: var(--bg-card-hover); }
+.arch-layer-name {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+.arch-layer-desc {
+  font-family: var(--serif);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ─── Get Involved / Link cards ─── */
+.get-involved {
+  padding: 5rem 0 3rem;
+  border-top: 1px solid var(--border);
+}
+
+.link-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem 1.75rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.link-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.link-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+.link-card:hover::before { opacity: 1; }
+
+.link-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: var(--accent-glow);
+  border-radius: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.link-card-icon.warm {
+  background: var(--accent-warm-dim);
+  color: var(--accent-warm);
+}
+
+.link-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.link-card-label {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.link-card-desc {
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.link-card-url {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.link-card-arrow {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.link-card:hover .link-card-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+/* ─── Footer ─── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.6; }
+}
+@keyframes pulse {
+  0% { r: 4; opacity: 0.6; }
+  100% { r: 24; opacity: 0; }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .container { padding: 0 1.25rem; }
+  .detail-body { margin-left: 0; }
+  .detail-number { font-size: 2rem; }
+  .arch-strip { flex-direction: column; }
+  .arch-layer { border-right: none; border-bottom: 1px solid var(--border); }
+  .arch-layer:last-child { border-bottom: none; }
+  .features-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span id="theme-label">LIGHT</span>
+</button>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero">
+  <div class="container" style="position:relative;">
+    <div class="hero-eyebrow">Decentralized &middot; Encrypted &middot; Delay-Tolerant</div>
+    <h1 class="hero-title">
+      Treadwell<br><span class="accent">Protocol</span>
+    </h1>
+    <p class="hero-subtitle">
+      A state-synchronization protocol for off-grid encrypted messaging.
+      No servers. No internet. No fixed topology. Just people carrying
+      drives between nodes&thinsp;&mdash;&thinsp;and the network converges.
+    </p>
+    <div class="hero-premise">
+      If current infrastructure fails&thinsp;&mdash;&thinsp;or is unavailable, degraded,
+      surveilled, or untrusted&thinsp;&mdash;&thinsp;people can still communicate by
+      carrying USB drives between locations. Runners carry drives in any
+      direction. The state just keeps converging naturally.
+    </div>
+
+    <!-- Node constellation -->
+    <div class="hero-nodes" aria-hidden="true">
+      <svg viewBox="0 0 320 320">
+        <!-- Connections -->
+        <line class="node-line" x1="80" y1="60" x2="200" y2="100"/>
+        <line class="node-line" x1="200" y1="100" x2="160" y2="200"/>
+        <line class="node-line" x1="160" y1="200" x2="60" y2="180"/>
+        <line class="node-line" x1="60" y1="180" x2="80" y2="60"/>
+        <line class="node-line" x1="200" y1="100" x2="260" y2="220"/>
+        <line class="node-line" x1="260" y1="220" x2="160" y2="200"/>
+        <line class="node-line" x1="160" y1="200" x2="120" y2="280"/>
+        <line class="node-line" x1="60" y1="180" x2="120" y2="280"/>
+        <!-- Pulse rings -->
+        <circle class="node-pulse" cx="200" cy="100" r="4"/>
+        <circle class="node-pulse" cx="160" cy="200" r="4"/>
+        <circle class="node-pulse" cx="120" cy="280" r="4"/>
+        <!-- Nodes -->
+        <circle class="node-dot" cx="80" cy="60" r="4"/>
+        <circle class="node-dot" cx="200" cy="100" r="5"/>
+        <circle class="node-dot warm" cx="160" cy="200" r="5"/>
+        <circle class="node-dot" cx="60" cy="180" r="3.5"/>
+        <circle class="node-dot" cx="260" cy="220" r="4"/>
+        <circle class="node-dot warm" cx="120" cy="280" r="4"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">Scroll</div>
+</section>
+
+<!-- ════════ FEATURES OVERVIEW ════════ -->
+<section class="container">
+  <div class="section-label">Core Principles</div>
+  <h2 class="section-heading">Built for the worst case</h2>
+  <p class="section-intro">
+    The protocol works when nothing else does. Every design decision serves
+    resilience, privacy, and independence from infrastructure.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-card" onclick="scrollToDetail('no-topology')" data-target="no-topology">
+      <div class="feature-icon">&darr;&uarr;</div>
+      <h3>No Fixed Topology</h3>
+      <p>Runners carry drives in any direction. No routing tables, no path discovery, no servers. State converges regardless of who carries what where.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('crdt-sync')" data-target="crdt-sync">
+      <div class="feature-icon">&oplus;</div>
+      <h3>State Replication, Not Routing</h3>
+      <p>Drives carry state, not messages. Every sync is a bidirectional merge. Duplicates, ordering, delivery tracking&thinsp;&mdash;&thinsp;all eliminated by design.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('encrypted')" data-target="encrypted">
+      <div class="feature-icon warm">&#9670;</div>
+      <h3>Encrypted by Default</h3>
+      <p>All content is ciphertext. Lost drives reveal nothing. Couriers carry state they cannot read, for people they cannot identify.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('transport-agnostic')" data-target="transport-agnostic">
+      <div class="feature-icon">&equiv;</div>
+      <h3>Transport Agnostic</h3>
+      <p>Designed for USB sneakernet but not bound to it. The same protocol works over LoRa, HF radio, TCP/IP, or any delay-tolerant channel.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('domains')" data-target="domains">
+      <div class="feature-icon warm">&#9632;</div>
+      <h3>Pluggable Domains</h3>
+      <p>Not bound to any application. Message bases, private mail, file bases, ledgers, and future types all replicate through the same engine.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('metadata-first')" data-target="metadata-first">
+      <div class="feature-icon">&#9681;</div>
+      <h3>Metadata-First Propagation</h3>
+      <p>Know what exists across the network before content arrives. Small metadata travels fast; large blobs follow on demand.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ DETAIL SECTIONS ════════ -->
+<div class="container">
+
+  <!-- 01 -->
+  <section class="detail-section" id="no-topology">
+    <div class="detail-header">
+      <div class="detail-number">01</div>
+      <div>
+        <h3 class="detail-title">No Fixed Topology</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        Traditional messaging networks require structure: servers, routing tables,
+        hub-and-spoke hierarchies. FidoNet had zones, nets, and hubs. The internet
+        has BGP and DNS. All of them assume that the topology is known, stable, and
+        navigable.
+      </p>
+      <p>
+        Treadwell assumes <strong>none of that</strong>. Runners carry USB drives between
+        nodes in whatever direction their day takes them. A drive might visit three
+        homesteads in one direction today and a completely different set tomorrow.
+        Five drives might be circulating simultaneously through overlapping subsets
+        of the network. The protocol doesn't care.
+      </p>
+      <p>
+        Every sync pass is a <strong>bidirectional state merge</strong>. The drive
+        and the node compare what they each know, exchange the differences, and part
+        ways. No routing decision is made. No path is computed. No delivery receipt
+        is expected. The network converges toward consistency through the simple,
+        repeated act of drives visiting nodes.
+      </p>
+      <div class="detail-callout">
+        Path independence &middot; Criss-cross resilience &middot;
+        Idempotent sync &middot; No routing layer &middot;
+        Works with one drive or a hundred
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="detail-section" id="crdt-sync">
+    <div class="detail-header">
+      <div class="detail-number">02</div>
+      <div>
+        <h3 class="detail-title">State Replication, Not Message Routing</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        The protocol does not deliver messages. It synchronizes state. Each node
+        maintains a local view of the world. USB drives carry snapshots of that
+        state. When a drive meets a node, both sides merge&thinsp;&mdash;&thinsp;what do I have
+        that you don't? What do you have that I don't?&thinsp;&mdash;&thinsp;and both walk away
+        with a more complete picture.
+      </p>
+      <p>
+        This is a <strong>conflict-free replicated data type (CRDT)</strong> model.
+        The merge operation is deterministic and commutative: it doesn't matter
+        what order drives arrive, or how many times you sync the same drive. The
+        result is always the same converged state.
+      </p>
+      <p>
+        This eliminates entire categories of problems that plague store-and-forward
+        networks: duplicate detection, delivery confirmation, retry logic, message
+        ordering, and return-path routing. In a topology-free sneakernet, those
+        problems are unsolvable. Treadwell sidesteps them by not trying to deliver
+        anything.
+      </p>
+      <ul class="detail-list">
+        <li>Content-addressed storage: every object identified by its BLAKE3 hash</li>
+        <li>Bloom filter diffing for efficient sync negotiation</li>
+        <li>Vector clocks for causal ordering where needed</li>
+        <li>Idempotent merge: syncing the same drive twice is a no-op</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="detail-section" id="encrypted">
+    <div class="detail-header">
+      <div class="detail-number">03</div>
+      <div>
+        <h3 class="detail-title">Encrypted by Default</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        Every blob enters the content-addressed store <strong>already encrypted</strong>.
+        The sync engine and transport layer never see cleartext. A captured USB
+        drive reveals only opaque ciphertext, opaque domain identifiers, and
+        blinded metadata. The adversary can observe volume but not content,
+        structure but not meaning.
+      </p>
+      <p>
+        Identity is rooted in <strong>Ed25519 keypairs</strong>. No usernames, no
+        registration, no central authority. You generate a key, and you exist.
+        Trust is built through a web-of-trust model: real people vouching for
+        real people, with attestations that replicate across the network like
+        any other state.
+      </p>
+      <p>
+        Each replication domain has its own encryption context:
+      </p>
+      <ul class="detail-list">
+        <li><strong>Public bases</strong>&thinsp;&mdash;&thinsp;signed but unencrypted, readable by anyone</li>
+        <li><strong>Private bases</strong>&thinsp;&mdash;&thinsp;ChaCha20-Poly1305 with a shared group key, epoch-rotated</li>
+        <li><strong>Netmail</strong>&thinsp;&mdash;&thinsp;encrypted to the recipient's X25519 public key via Diffie-Hellman</li>
+        <li><strong>Forward-secret mail</strong>&thinsp;&mdash;&thinsp;ephemeral prekeys for per-message forward secrecy</li>
+      </ul>
+      <div class="detail-callout warm">
+        Couriers don't need to be trusted. They carry state they cannot read,
+        for participants they cannot identify, in a network whose structure they
+        cannot infer.
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="detail-section" id="transport-agnostic">
+    <div class="detail-header">
+      <div class="detail-number">04</div>
+      <div>
+        <h3 class="detail-title">Transport Agnostic</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        The sync engine does not know or care what carries the payload. It
+        operates on a serialized <strong>SyncPayload</strong>&thinsp;&mdash;&thinsp;a CBOR-encoded
+        structure containing domain metadata, encrypted blobs, want lists, and
+        vector clocks. That payload can travel on:
+      </p>
+      <ul class="detail-list">
+        <li>A USB drive in a runner's pocket</li>
+        <li>A LoRa radio packet (metadata-only for low bandwidth)</li>
+        <li>An HF radio link</li>
+        <li>A TCP/IP socket (when internet is available)</li>
+        <li>An email attachment, an SD card, a QR code sequence</li>
+      </ul>
+      <p>
+        The protocol is designed for <strong>delay-tolerant, high-latency</strong>
+        channels, but it works equally well when latency drops to milliseconds
+        over TCP. The same merge logic runs regardless. Adding a new transport
+        means writing a thin adapter that reads and writes SyncPayloads&thinsp;&mdash;&thinsp;no
+        protocol changes.
+      </p>
+      <p>
+        USB drives are the primary design target because they offer
+        <strong>enormous bandwidth</strong> (gigabytes per trip) at the cost of
+        latency (hours or days). A single inexpensive key can carry more data
+        than weeks of LoRa transmissions.
+      </p>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="detail-section" id="domains">
+    <div class="detail-header">
+      <div class="detail-number">05</div>
+      <div>
+        <h3 class="detail-title">Pluggable Replication Domains</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        The protocol is not a messaging app. It is a <strong>general-purpose
+        state synchronization engine</strong> that carries typed replication
+        domains. Each domain is an independent CRDT with its own merge
+        strategy, encryption context, and retention policy.
+      </p>
+
+      <div class="arch-strip">
+        <div class="arch-layer">
+          <div class="arch-layer-name">Echomail</div>
+          <div class="arch-layer-desc">Group message bases</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Netmail</div>
+          <div class="arch-layer-desc">Private messages</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Files</div>
+          <div class="arch-layer-desc">BBS-style file bases</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Ledger</div>
+          <div class="arch-layer-desc">Audit logs &amp; chains</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Keyring</div>
+          <div class="arch-layer-desc">Identity &amp; trust</div>
+        </div>
+      </div>
+
+      <p>
+        Nodes subscribe independently to whichever domains they care about.
+        A node running at a medical clinic subscribes to the health base. A
+        trading post subscribes to the barter base. A courier's drive carries
+        whatever its route demands. Sync is scoped to the intersection of
+        domains shared between a node and a drive.
+      </p>
+      <p>
+        Adding a new domain type in the future&thinsp;&mdash;&thinsp;a reputation system, a
+        shared map, a voting protocol&thinsp;&mdash;&thinsp;requires only a new merge function.
+        The transport and sync layers remain untouched. Unknown domain types
+        can be carried opaquely as relay cargo.
+      </p>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="detail-section" id="metadata-first">
+    <div class="detail-header">
+      <div class="detail-number">06</div>
+      <div>
+        <h3 class="detail-title">Metadata-First Propagation</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        Every sync has two phases. <strong>Phase 1</strong> exchanges
+        metadata&thinsp;&mdash;&thinsp;compact records (hash, author, timestamp, size, parent
+        reference) that describe what exists. This is small and always runs.
+        <strong>Phase 2</strong> exchanges blobs&thinsp;&mdash;&thinsp;the actual encrypted
+        content. This is large and runs selectively, driven by want lists
+        and available capacity.
+      </p>
+      <p>
+        After a metadata-only sync, a node knows the <strong>full message graph</strong>
+        for every subscribed domain: who posted, in reply to what, when, and
+        how large the content is. It just doesn't have the content yet. Users
+        see activity immediately&thinsp;&mdash;&thinsp;"5 new messages in local.general"&thinsp;&mdash;&thinsp;before
+        a single blob has arrived.
+      </p>
+      <p>
+        Drives carry <strong>want lists</strong>: hashes of blobs that nodes along
+        the route have requested. When a drive visits a node that holds a
+        wanted blob, it picks it up. The drive is not just a replication
+        medium&thinsp;&mdash;&thinsp;it's a <strong>courier with a shopping list</strong>.
+      </p>
+      <div class="detail-callout">
+        Metadata propagates at the speed of the fastest courier.
+        Content follows at the speed of available capacity.
+        The network converges awareness quickly and fills in
+        substance gradually.
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture summary -->
+  <section class="detail-section" id="architecture">
+    <div class="detail-header">
+      <div class="detail-number">&mdash;</div>
+      <div>
+        <h3 class="detail-title">Three-Layer Architecture</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="arch-strip">
+        <div class="arch-layer">
+          <div class="arch-layer-name">Transport</div>
+          <div class="arch-layer-desc">USB detection, payload I/O. Knows nothing about content. Replaceable.</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Replication</div>
+          <div class="arch-layer-desc">Domain diffing, bloom filters, merge dispatch. Designed once.</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Application</div>
+          <div class="arch-layer-desc">Echomail, netmail, files, ledger, keyring. Each defines its own merge &amp; encryption.</div>
+        </div>
+      </div>
+      <p>
+        The protocol's strength is in this separation. The transport layer
+        is thin and replaceable. The replication layer is the stable core,
+        written once. The application layer is where new domain types are
+        added without touching anything below.
+      </p>
+      <p>
+        A USB drive is a serialized snapshot of the replication layer's state
+        for whatever domains it carries. It is a passive data structure, not
+        a node. It has no identity, runs no code, and makes no decisions.
+        It is a letter, not a post office.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ════════ GET INVOLVED ════════ -->
+<section class="container">
+  <div class="get-involved">
+    <div class="get-involved-header">
+      <div class="section-label" style="padding-top:0;">Get Involved</div>
+      <h2 class="section-heading">Build with us</h2>
+      <p class="section-intro" style="margin-bottom:2rem;">
+        Treadwell is an open protocol. The design is evolving, the code is
+        early, and the conversation is open.
+      </p>
+    </div>
+    <div class="link-cards">
+      <a href="https://github.com/Treadwell-Network" target="_blank" rel="noopener" class="link-card">
+        <div class="link-card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </div>
+        <div class="link-card-content">
+          <div class="link-card-label">GitHub</div>
+          <div class="link-card-desc">Source code, protocol specs, and contributions</div>
+          <div class="link-card-url">github.com/Treadwell-Network</div>
+        </div>
+        <div class="link-card-arrow">&rarr;</div>
+      </a>
+      <a href="https://treadwell.zulipchat.com/" target="_blank" rel="noopener" class="link-card">
+        <div class="link-card-icon warm">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="link-card-content">
+          <div class="link-card-label">Zulip</div>
+          <div class="link-card-desc">Discussion, design decisions, and community chat</div>
+          <div class="link-card-url">treadwell.zulipchat.com</div>
+        </div>
+        <div class="link-card-arrow">&rarr;</div>
+      </a>
+      <a href="treadwell-protocol-design.docx" download class="link-card">
+        <div class="link-card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="link-card-content">
+          <div class="link-card-label">Whitepaper</div>
+          <div class="link-card-desc">Full protocol design document &mdash; architecture, cryptography, sync protocol, and threat model</div>
+          <div class="link-card-url">treadwell-protocol-design.docx</div>
+        </div>
+        <div class="link-card-arrow">&darr;</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="site-footer">
+  <div class="container">
+    Treadwell Protocol &middot; v0.1 &middot; April 2026 &middot; Draft Design<br>
+    <span style="margin-top:0.5rem; display:inline-block;">
+      <a href="https://treadwell.network">treadwell.network</a>
+      &middot;
+      <a href="https://github.com/Treadwell-Network">GitHub</a>
+      &middot;
+      <a href="https://treadwell.zulipchat.com/">Zulip</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+// ─── Theme toggle ───
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'DARK' : 'LIGHT';
+  localStorage.setItem('treadwell-theme', next);
+}
+
+// Restore saved theme
+const saved = localStorage.getItem('treadwell-theme');
+if (saved) {
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-label').textContent = saved === 'light' ? 'DARK' : 'LIGHT';
+}
+
+// ─── Scroll to detail ───
+function scrollToDetail(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    // Toggle active state on cards
+    document.querySelectorAll('.feature-card').forEach(c => c.classList.remove('active'));
+    const card = document.querySelector(`[data-target="${id}"]`);
+    if (card) card.classList.add('active');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ─── Intersection observer for scroll reveal ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.detail-section').forEach(s => observer.observe(s));
+
+// ─── Highlight active card on scroll ───
+const detailSections = document.querySelectorAll('.detail-section[id]');
+const featureCards = document.querySelectorAll('.feature-card[data-target]');
+
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      featureCards.forEach(c => c.classList.remove('active'));
+      const card = document.querySelector(`[data-target="${entry.target.id}"]`);
+      if (card) card.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+detailSections.forEach(s => cardObserver.observe(s));
+</script>
+
+</body>
+</html>
