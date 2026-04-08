@@ -16,52 +16,52 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg-primary: #0a0c10;
-  --bg-secondary: #12151c;
-  --bg-card: #181c25;
-  --bg-card-hover: #1e2330;
-  --bg-accent: #1a2332;
-  --text-primary: #e8eaf0;
-  --text-secondary: #8a90a0;
-  --text-muted: #555c6e;
-  --accent: #4a9eff;
-  --accent-dim: #2a6cc4;
-  --accent-glow: rgba(74, 158, 255, 0.15);
-  --accent-glow-strong: rgba(74, 158, 255, 0.3);
-  --accent-warm: #f0a050;
-  --accent-warm-dim: rgba(240, 160, 80, 0.15);
-  --border: #252a36;
-  --border-accent: #2a3a50;
-  --grid-line: rgba(74, 158, 255, 0.04);
-  --node-pulse: rgba(74, 158, 255, 0.6);
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+  --bg-primary: #100e0a;
+  --bg-secondary: #1a1710;
+  --bg-card: #211e16;
+  --bg-card-hover: #2a261c;
+  --bg-accent: #252015;
+  --text-primary: #e4dfd2;
+  --text-secondary: #a09880;
+  --text-muted: #6a6250;
+  --accent: #b8945a;
+  --accent-dim: #8c7040;
+  --accent-glow: rgba(184, 148, 90, 0.12);
+  --accent-glow-strong: rgba(184, 148, 90, 0.25);
+  --accent-warm: #c47040;
+  --accent-warm-dim: rgba(196, 112, 64, 0.12);
+  --border: #302a1e;
+  --border-accent: #4a3e2a;
+  --grid-line: rgba(184, 148, 90, 0.03);
+  --node-pulse: rgba(184, 148, 90, 0.5);
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
   --mono: 'JetBrains Mono', monospace;
   --serif: 'Source Serif 4', Georgia, serif;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="light"] {
-  --bg-primary: #f4f2ee;
-  --bg-secondary: #eae7e1;
-  --bg-card: #ffffff;
-  --bg-card-hover: #fafaf8;
-  --bg-accent: #e8eef6;
-  --text-primary: #1a1c22;
-  --text-secondary: #5a5e6a;
-  --text-muted: #9a9eaa;
-  --accent: #2a6cc4;
-  --accent-dim: #4a9eff;
-  --accent-glow: rgba(42, 108, 196, 0.08);
-  --accent-glow-strong: rgba(42, 108, 196, 0.15);
-  --accent-warm: #c07828;
-  --accent-warm-dim: rgba(192, 120, 40, 0.1);
-  --border: #d8d4cc;
-  --border-accent: #b8c8dc;
-  --grid-line: rgba(42, 108, 196, 0.04);
-  --node-pulse: rgba(42, 108, 196, 0.5);
-  --shadow: 0 4px 24px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+  --bg-primary: #f4f0e6;
+  --bg-secondary: #eae4d6;
+  --bg-card: #faf8f2;
+  --bg-card-hover: #f5f2ea;
+  --bg-accent: #ede8da;
+  --text-primary: #2e2a20;
+  --text-secondary: #68604a;
+  --text-muted: #a09880;
+  --accent: #8c7040;
+  --accent-dim: #b8945a;
+  --accent-glow: rgba(140, 112, 64, 0.08);
+  --accent-glow-strong: rgba(140, 112, 64, 0.15);
+  --accent-warm: #a05830;
+  --accent-warm-dim: rgba(160, 88, 48, 0.08);
+  --border: #d4cbb8;
+  --border-accent: #c4b898;
+  --grid-line: rgba(140, 112, 64, 0.04);
+  --node-pulse: rgba(140, 112, 64, 0.4);
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.1);
 }
 
 html { scroll-behavior: smooth; font-size: 16px; }
@@ -225,13 +225,13 @@ body::before {
 .hero-nodes svg { width: 100%; height: 100%; }
 
 .node-dot {
-  fill: var(--accent);
+  fill: #b8945a;
   opacity: 0.7;
 }
-.node-dot.warm { fill: var(--accent-warm); }
+.node-dot.warm { fill: #c47040; }
 
 .node-line {
-  stroke: var(--accent);
+  stroke: #b8945a;
   stroke-width: 1;
   opacity: 0.15;
   stroke-dasharray: 4 4;
@@ -239,7 +239,7 @@ body::before {
 
 .node-pulse {
   fill: none;
-  stroke: var(--node-pulse);
+  stroke: rgba(184, 148, 90, 0.5);
   stroke-width: 1;
   opacity: 0;
   animation: pulse 3s infinite;
@@ -641,13 +641,14 @@ body::before {
     <p class="hero-subtitle">
       A state-synchronization protocol for off-grid encrypted messaging.
       No servers. No internet. No fixed topology. Just people carrying
-      drives between nodes&thinsp;&mdash;&thinsp;and the network converges.
+      archives between nodes&thinsp;&mdash;&thinsp;and the network converges.
     </p>
     <div class="hero-premise">
       If current infrastructure fails&thinsp;&mdash;&thinsp;or is unavailable, degraded,
       surveilled, or untrusted&thinsp;&mdash;&thinsp;people can still communicate by
       carrying USB drives between locations. Runners carry drives in any
-      direction. The state just keeps converging naturally.
+      direction. The state just keeps converging naturally. Not bound to
+      any application, not bound to any medium&thinsp;&mdash;&thinsp;encrypted by default.
     </div>
 
     <!-- Node constellation -->
@@ -692,14 +693,14 @@ body::before {
     <div class="feature-card" onclick="scrollToDetail('no-topology')" data-target="no-topology">
       <div class="feature-icon">&darr;&uarr;</div>
       <h3>No Fixed Topology</h3>
-      <p>Runners carry drives in any direction. No routing tables, no path discovery, no servers. State converges regardless of who carries what where.</p>
+      <p>Runners carry archives in any direction. No routing tables, no path discovery, no servers. State converges regardless of who carries what where.</p>
       <div class="feature-expand-hint">Read more &darr;</div>
     </div>
 
     <div class="feature-card" onclick="scrollToDetail('crdt-sync')" data-target="crdt-sync">
       <div class="feature-icon">&oplus;</div>
       <h3>State Replication, Not Routing</h3>
-      <p>Drives carry state, not messages. Every sync is a bidirectional merge. Duplicates, ordering, delivery tracking&thinsp;&mdash;&thinsp;all eliminated by design.</p>
+      <p>Archives carry state, not messages. Every sync is a bidirectional merge. Duplicates, ordering, delivery tracking&thinsp;&mdash;&thinsp;all eliminated by design.</p>
       <div class="feature-expand-hint">Read more &darr;</div>
     </div>
 
@@ -719,15 +720,29 @@ body::before {
 
     <div class="feature-card" onclick="scrollToDetail('domains')" data-target="domains">
       <div class="feature-icon warm">&#9632;</div>
-      <h3>Pluggable Domains</h3>
-      <p>Not bound to any application. Message bases, private mail, file bases, ledgers, and future types all replicate through the same engine.</p>
+      <h3>Domains &amp; Channels</h3>
+      <p>System domains carry mandatory infrastructure. Application domains carry opt-in content: message channels, private mail, file bases, ledgers.</p>
       <div class="feature-expand-hint">Read more &darr;</div>
     </div>
 
     <div class="feature-card" onclick="scrollToDetail('metadata-first')" data-target="metadata-first">
       <div class="feature-icon">&#9681;</div>
       <h3>Metadata-First Propagation</h3>
-      <p>Know what exists across the network before content arrives. Small metadata travels fast; large blobs follow on demand.</p>
+      <p>Know what exists across the network before content arrives. Small metadata travels fast; large blobs follow on demand via want lists.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('identity')" data-target="identity">
+      <div class="feature-icon">&#9670;</div>
+      <h3>Users, Nodes, Archives</h3>
+      <p>Three entity types with distinct roles. Users are portable identities. Nodes are machines. Archives are passive sync payloads carried by any medium.</p>
+      <div class="feature-expand-hint">Read more &darr;</div>
+    </div>
+
+    <div class="feature-card" onclick="scrollToDetail('privacy')" data-target="privacy">
+      <div class="feature-icon warm">&#9632;</div>
+      <h3>Privacy &amp; Anonymity</h3>
+      <p>Privacy by default. Anonymity where needed. Hidden channels with plausible deniability. Forward secrecy for private mail. Web of trust, not central authority.</p>
       <div class="feature-expand-hint">Read more &darr;</div>
     </div>
   </div>
@@ -894,21 +909,56 @@ body::before {
     <div class="detail-header">
       <div class="detail-number">05</div>
       <div>
-        <h3 class="detail-title">Pluggable Replication Domains</h3>
+        <h3 class="detail-title">Domains &amp; Channels</h3>
       </div>
     </div>
     <div class="detail-body">
       <p>
-        The protocol is not a messaging app. It is a <strong>general-purpose
-        state synchronization engine</strong> that carries typed replication
-        domains. Each domain is an independent CRDT with its own merge
-        strategy, encryption context, and retention policy.
+        The protocol uses three levels of naming. A <strong>domain</strong> is the
+        category (echomail, netmail, file base). A <strong>channel</strong> is a
+        specific instance within a domain (local.general, trade.barter). A
+        <strong>topic</strong> is the human-readable name. Nodes subscribe to
+        channels. Archives carry channels. The sync engine operates on channels.
+      </p>
+      <p>
+        Domains are divided into two categories:
       </p>
 
       <div class="arch-strip">
+        <div class="arch-layer" style="border-bottom: 2px solid var(--accent);">
+          <div class="arch-layer-name">System (mandatory)</div>
+          <div class="arch-layer-desc">Synced by every node automatically</div>
+        </div>
+      </div>
+      <div class="arch-strip" style="margin-top: 0.5rem;">
+        <div class="arch-layer">
+          <div class="arch-layer-name">Keyring</div>
+          <div class="arch-layer-desc">Identity &amp; trust</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Directory</div>
+          <div class="arch-layer-desc">Channel discovery</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Epoch</div>
+          <div class="arch-layer-desc">ID rotation</div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-name">Moderation</div>
+          <div class="arch-layer-desc">Network-wide bans</div>
+        </div>
+      </div>
+
+      <div class="arch-strip" style="margin-top: 1.25rem; border-top: 2px solid var(--accent-warm);">
+        <div class="arch-layer" style="border-bottom: none;">
+          <div class="arch-layer-name" style="color: var(--accent-warm);">Application (opt-in)</div>
+          <div class="arch-layer-desc">Subscribed by choice</div>
+        </div>
+      </div>
+      <div class="arch-strip" style="margin-top: 0.5rem;">
         <div class="arch-layer">
           <div class="arch-layer-name">Echomail</div>
-          <div class="arch-layer-desc">Group message bases</div>
+          <div class="arch-layer-desc">Message channels</div>
         </div>
         <div class="arch-layer">
           <div class="arch-layer-name">Netmail</div>
@@ -916,30 +966,20 @@ body::before {
         </div>
         <div class="arch-layer">
           <div class="arch-layer-name">Files</div>
-          <div class="arch-layer-desc">BBS-style file bases</div>
+          <div class="arch-layer-desc">File bases</div>
         </div>
         <div class="arch-layer">
           <div class="arch-layer-name">Ledger</div>
-          <div class="arch-layer-desc">Audit logs &amp; chains</div>
-        </div>
-        <div class="arch-layer">
-          <div class="arch-layer-name">Keyring</div>
-          <div class="arch-layer-desc">Identity &amp; trust</div>
+          <div class="arch-layer-desc">Audit logs</div>
         </div>
       </div>
 
-      <p>
-        Nodes subscribe independently to whichever domains they care about.
-        A node running at a medical clinic subscribes to the health base. A
-        trading post subscribes to the barter base. A courier's drive carries
-        whatever its route demands. Sync is scoped to the intersection of
-        domains shared between a node and a drive.
-      </p>
-      <p>
-        Adding a new domain type in the future&thinsp;&mdash;&thinsp;a reputation system, a
-        shared map, a voting protocol&thinsp;&mdash;&thinsp;requires only a new merge function.
-        The transport and sync layers remain untouched. Unknown domain types
-        can be carried opaquely as relay cargo.
+      <p style="margin-top: 1.5rem;">
+        The mandatory/opt-in distinction is structural: the domain type determines
+        it, not a per-channel flag. No central authority decides what&rsquo;s
+        mandatory&thinsp;&mdash;&thinsp;system channels are protocol infrastructure by
+        definition. Adding a new application domain requires only a new merge
+        function. The transport and sync layers remain untouched.
       </p>
     </div>
   </section>
@@ -983,6 +1023,84 @@ body::before {
     </div>
   </section>
 
+  <!-- 07 - Identity -->
+  <section class="detail-section" id="identity">
+    <div class="detail-header">
+      <div class="detail-number">07</div>
+      <div>
+        <h3 class="detail-title">Users, Nodes, and Archives</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        The protocol distinguishes three entity types, each with a different
+        role and a different kind of identifier.
+      </p>
+      <ul class="detail-list">
+        <li><strong>Users</strong> are people. They carry portable Ed25519 keypairs,
+            author messages, receive netmail, and participate in the web of trust.
+            A user can operate on multiple nodes. Identity survives hardware loss.</li>
+        <li><strong>Nodes</strong> are machines. They store state, run the sync engine,
+            and host user accounts. Each node has its own Ed25519 keypair used in
+            vector clocks and route logs. A node&rsquo;s trust derives from its operators.</li>
+        <li><strong>Archives</strong> are serialized sync payloads that move between
+            nodes via any transport medium. A USB drive carries a persistent archive.
+            A TCP connection transmits an ephemeral archive. Archives have a random ID
+            (not a keypair), a retention policy, and a want list. They are passive,
+            expendable, and replaceable.</li>
+      </ul>
+      <p>
+        Trust is built through a <strong>web of trust</strong>: people vouch for
+        people by signing each other&rsquo;s public keys. No certificate authority,
+        no central registry. Each node evaluates trust locally based on its own
+        policy. BBSes can form trust rings to relay data on each other&rsquo;s behalf.
+      </p>
+      <div class="detail-callout">
+        Users carry identity. Nodes provide infrastructure.
+        Archives carry state. The three never overlap.
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 - Privacy -->
+  <section class="detail-section" id="privacy">
+    <div class="detail-header">
+      <div class="detail-number">08</div>
+      <div>
+        <h3 class="detail-title">Privacy and Anonymity</h3>
+      </div>
+    </div>
+    <div class="detail-body">
+      <p>
+        <strong>Privacy</strong> is structural and default: all blobs are
+        encrypted before storage, metadata uses blinded identifiers, and
+        the sync engine never handles cleartext. A captured USB drive
+        reveals ciphertext, opaque channel IDs, and blinded metadata.
+      </p>
+      <p>
+        <strong>Anonymity</strong> is opt-in. Each channel can set its own
+        authorship policy: signed (real identity), pseudonymous (consistent
+        within a channel but unlinkable across channels), or anonymous (no
+        attribution). Hidden channels combine encryption, opaque IDs, and
+        anonymous posting so that non-members cannot detect the channel
+        exists.
+      </p>
+      <ul class="detail-list">
+        <li><strong>Forward secrecy</strong> for netmail via one-time prekeys (best-effort, limited by courier speed)</li>
+        <li><strong>Epoch-approximate forward secrecy</strong> for private groups via key rotation</li>
+        <li><strong>Two-layer signatures</strong>: outer (metadata, verified during sync) and inner (content, verified after decryption)</li>
+        <li><strong>Plausible deniability</strong>: hidden channel traffic is indistinguishable from opaque relay data</li>
+        <li><strong>Subscription privacy</strong>: mitigated by cover channels, universal metadata carry, or future ZKP-protected sync</li>
+      </ul>
+      <div class="detail-callout warm">
+        Privacy by default. Anonymity where the channel policy allows it.
+        The protocol is honest that anonymity degrades under physical
+        surveillance&thinsp;&mdash;&thinsp;traffic analysis is a social problem,
+        not a cryptographic one.
+      </div>
+    </div>
+  </section>
+
   <!-- Architecture summary -->
   <section class="detail-section" id="architecture">
     <div class="detail-header">
@@ -995,26 +1113,27 @@ body::before {
       <div class="arch-strip">
         <div class="arch-layer">
           <div class="arch-layer-name">Transport</div>
-          <div class="arch-layer-desc">USB detection, payload I/O. Knows nothing about content. Replaceable.</div>
+          <div class="arch-layer-desc">USB, TCP, radio. Reads and writes archives. Knows nothing about content.</div>
         </div>
         <div class="arch-layer">
           <div class="arch-layer-name">Replication</div>
-          <div class="arch-layer-desc">Domain diffing, bloom filters, merge dispatch. Designed once.</div>
+          <div class="arch-layer-desc">Channel diffing, bloom filters, merge dispatch. Designed once.</div>
         </div>
         <div class="arch-layer">
           <div class="arch-layer-name">Application</div>
-          <div class="arch-layer-desc">Echomail, netmail, files, ledger, keyring. Each defines its own merge &amp; encryption.</div>
+          <div class="arch-layer-desc">Echomail, netmail, files, ledger. Each defines its own merge &amp; encryption.</div>
         </div>
       </div>
       <p>
-        The protocol's strength is in this separation. The transport layer
-        is thin and replaceable. The replication layer is the stable core,
-        written once. The application layer is where new domain types are
-        added without touching anything below.
+        The transport layer is thin and replaceable. The replication layer
+        is the stable core, written once. The application layer is where
+        new domain types are added without touching anything below.
+        System domain channels (keyring, directory, epoch, moderation)
+        are synced as protocol infrastructure before application channels.
       </p>
       <p>
-        A USB drive is a serialized snapshot of the replication layer's state
-        for whatever domains it carries. It is a passive data structure, not
+        An archive is a serialized snapshot of the replication layer's state
+        for whatever channels it carries. It is a passive data structure, not
         a node. It has no identity, runs no code, and makes no decisions.
         It is a letter, not a post office.
       </p>
